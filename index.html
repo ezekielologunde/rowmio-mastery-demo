@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Rowmio mastery diagnosis: a client-side walkthrough of the real diagnose-remediate-verify state machine, running on synthetic content.">
+<title>Rowmio Mastery Diagnosis | Ezekiel Ologunde</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="brandmark">R</span>Rowmio<span class="brandlight">Mastery</span></div>
+  <div class="header-meta"><span class="live-dot"></span>Interactive portfolio demo <span class="sep">/</span> synthetic content, client-side only</div>
+  <a href="https://github.com/ezekielologunde/rowmio-mastery-demo" target="_blank" rel="noopener">Source &amp; design notes &#8599;</a>
+</header>
+<main>
+  <section class="intro">
+    <div class="eyebrow">DIAGNOSE &rarr; REMEDIATE &rarr; VERIFY &rarr; DELAYED RECHECK</div>
+    <h1>One objective, walked through the real state machine.</h1>
+    <p class="lede">This runs <code>nextMasteryStatus()</code>, ported verbatim from the private Rowmio monorepo's mastery engine, against one synthetic learning objective. No network calls, no real students, no AI mode &mdash; bank-mode classification is a lookup against tagged distractors, exactly as speced.</p>
+  </section>
+  <div class="workbench">
+    <section class="stage-panel" id="stage"></section>
+    <aside class="evidence-panel">
+      <div class="status-row">
+        <span>Mastery state</span>
+        <span class="badge" id="status-badge">not_started</span>
+      </div>
+      <div class="due-note" id="due-note"></div>
+      <h3>Transition trace</h3>
+      <ul id="trace-list"></ul>
+      <p class="disclaimer">Every line here is a real call into the ported state-machine function, not a scripted animation.</p>
+    </aside>
+  </div>
+</main>
+<footer>
+  <p>Part of a small applied-AI portfolio alongside <a href="https://soc-review.vercel.app" target="_blank" rel="noopener">SOC Review</a>. Designed for scrutiny, built for review.</p>
+</footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>
