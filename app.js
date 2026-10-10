@@ -61,7 +61,6 @@ function escapeOption(v) {
 
 function renderDiagnostic() {
   stageEl.innerHTML = `
-    <div class="eyebrow">DIAGNOSTIC &middot; ${OBJECTIVE.title}</div>
     <h2>${escapeOption(DIAGNOSTIC.prompt)}</h2>
     <p class="lede">Pick an answer. Each wrong option is tagged with the specific misconception or gap it represents &mdash; the same "diagnostic distractor" authoring pattern the real D1 spec uses. Classifying it is a lookup, not a model call.</p>
     <div class="options" id="diag-options">
@@ -83,7 +82,6 @@ function renderDiagnostic() {
 function renderRemediation() {
   const opt = state.lastDiagnosticOption;
   stageEl.innerHTML = `
-    <div class="eyebrow">CLASSIFICATION</div>
     <h2>${opt.correct ? "Correct" : "Not quite"}</h2>
     ${opt.correct ? "" : `<p class="lede"><strong>${opt.tag.replace(/_/g, " ")}</strong>: ${opt.reason}</p>`}
     <p class="remediation">${REMEDIATION[state.diagnosedTag]}</p>
@@ -96,7 +94,6 @@ function renderRemediation() {
 function renderPractice() {
   let hintShown = false;
   stageEl.innerHTML = `
-    <div class="eyebrow">PRACTICE &middot; hint available</div>
     <h2>${escapeOption(PRACTICE.prompt)}</h2>
     <p class="lede">One practice attempt is enough to move the state from <strong>diagnosed</strong> into <strong>practicing</strong> in this model &mdash; the adaptive engine that picks which practice item to serve next, and fades hint availability, isn't modeled in this demo.</p>
     <button class="button secondary" id="show-hint">Show hint</button>
@@ -124,7 +121,6 @@ function renderPractice() {
 
 function renderPracticeResult() {
   stageEl.innerHTML = `
-    <div class="eyebrow">PRACTICE RESULT</div>
     <h2>${state.practiceWasCorrect ? "Correct." : "Not quite — but the state still advances."}</h2>
     <p class="note">Production would keep serving practice items with fading hints until the learner is ready. This demo moves straight to the independent check to keep the walkthrough short.</p>
     <button class="button" id="to-independent">Continue to independent check &rarr;</button>
@@ -134,7 +130,6 @@ function renderPracticeResult() {
 
 function renderIndependent() {
   stageEl.innerHTML = `
-    <div class="eyebrow">INDEPENDENT CHECK &middot; no hint available</div>
     <h2>${escapeOption(INDEPENDENT.prompt)}</h2>
     <p class="lede">No hint here by design. Per the real state machine, only a correct, unhinted independent attempt promotes the state; anything else leaves it at <strong>practicing</strong>.</p>
     <div class="answer-row">
@@ -153,7 +148,6 @@ function renderIndependent() {
 
 function renderIndependentRetry() {
   stageEl.innerHTML = `
-    <div class="eyebrow">STATE: still practicing</div>
     <h2>That attempt didn't promote the state.</h2>
     <p class="note">Matches production: a wrong (or hinted) independent attempt returns <strong>practicing</strong>, not a partial credit state. Try the independent check again.</p>
     <button class="button" id="retry">Try independent check again &rarr;</button>
@@ -163,7 +157,6 @@ function renderIndependentRetry() {
 
 function renderRecheckGate() {
   stageEl.innerHTML = `
-    <div class="eyebrow">VERIFIED INDEPENDENT &middot; recheck pending</div>
     <h2>${escapeOption(DELAYED_RECHECK.prompt)}</h2>
     <p class="lede">A delayed recheck is now scheduled for ${fmtDate(state.recheckDueAt)}. Try answering right now &mdash; the real state machine treats an early recheck attempt as a non-transition, even if correct, because it proves nothing about retention.</p>
     <div class="answer-row">
@@ -192,7 +185,6 @@ function renderRecheckGate() {
 
 function renderRecheckDue() {
   stageEl.innerHTML = `
-    <div class="eyebrow">RECHECK DUE &middot; simulated clock advanced</div>
     <h2>${escapeOption(DELAYED_RECHECK.prompt)}</h2>
     <p class="lede">The recheck is now due (simulated clock: ${fmtDate(state.simulatedNow)}). A correct, unhinted answer marks the objective <strong>mastered</strong>; a wrong one marks it <strong>regressed</strong>.</p>
     <div class="answer-row">
@@ -212,7 +204,6 @@ function renderRecheckDue() {
 function renderDone() {
   const mastered = state.status === "mastered";
   stageEl.innerHTML = `
-    <div class="eyebrow">END STATE</div>
     <h2>${mastered ? "Mastered." : "Regressed."}</h2>
     <p class="note">${mastered
       ? "Survived an unhinted independent check and a delayed recheck days later. Production would stop surfacing this objective as due for practice."
@@ -242,8 +233,32 @@ const renderers = {
   done: renderDone,
 };
 
+const STEPPER_STAGES = ["Diagnostic", "Remediation", "Practice", "Independent", "Recheck", "Result"];
+const STEP_TO_STAGE_INDEX = {
+  diagnostic: 0,
+  remediation: 1,
+  practice: 2,
+  "practice-result": 2,
+  independent: 3,
+  "independent-retry": 3,
+  "recheck-gate": 4,
+  "recheck-due": 4,
+  done: 5,
+};
+
+function renderStepper() {
+  const current = STEP_TO_STAGE_INDEX[state.step] ?? 0;
+  const stepperEl = document.getElementById("stepper");
+  if (!stepperEl) return;
+  stepperEl.innerHTML = STEPPER_STAGES.map((label, i) => {
+    const cls = i === current ? "current" : i < current ? "done" : "";
+    return `<span class="${cls}">${label}</span>`;
+  }).join("");
+}
+
 function render() {
   renderers[state.step]();
+  renderStepper();
   renderTrace();
 }
 

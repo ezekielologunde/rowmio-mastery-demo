@@ -15,19 +15,18 @@
 </header>
 <main>
   <section class="intro">
-    <div class="eyebrow">DIAGNOSE &rarr; REMEDIATE &rarr; VERIFY &rarr; DELAYED RECHECK</div>
     <h1>One objective, walked through the real state machine.</h1>
     <p class="lede">This runs <code>nextMasteryStatus()</code>, ported verbatim from the private Rowmio monorepo's mastery engine, against one synthetic learning objective. No network calls, no real students, no AI mode &mdash; bank-mode classification is a lookup against tagged distractors, exactly as speced.</p>
   </section>
   <div class="workbench">
-    <section class="stage-panel" id="stage"></section>
+    <section class="stage-panel"><nav class="stepper" id="stepper" aria-label="Current stage"></nav><div id="stage"></div></section>
     <aside class="evidence-panel">
       <div class="status-row">
         <span>Mastery state</span>
         <span class="badge" id="status-badge">not_started</span>
       </div>
       <div class="due-note" id="due-note"></div>
-      <h3>Transition trace</h3>
+      <h2>Transition trace</h2>
       <ul id="trace-list"></ul>
       <p class="disclaimer">Every line here is a real call into the ported state-machine function, not a scripted animation.</p>
     </aside>
